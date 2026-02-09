@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Note Studio v0.9</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .custom-loader {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #FFF;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .drag-over { border-color: #4f46e5; background-color: #f5f3ff; }
+    </style>
+</head>
+<body class="bg-stone-50 min-h-screen p-4 md:p-8 text-slate-800">
+
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-200">
+        <div class="bg-indigo-900 p-6 text-white flex justify-between items-center border-b-4 border-indigo-700">
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    PDF Note Studio v0.9
+                </h1>
+                <p class="opacity-80 mt-1 text-xs">Otimizado para estudos de Engenharia e Tecnologia.</p>
+            </div>
+            <div class="text-right hidden sm:block">
+                <span class="bg-indigo-700/50 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-indigo-500/30">Layout Portrait v0.9</span>
+            </div>
+        </div>
+
+        <div class="p-6 space-y-6">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div id="dropzone" class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-all group relative">
+                    <input type="file" id="fileInput" class="hidden" accept=".pdf" />
+                    <div class="flex flex-col items-center justify-center gap-3">
+                        <div class="bg-indigo-50 p-3 rounded-full group-hover:bg-indigo-100 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                        </div>
+                        <span id="fileNameDisplay" class="text-slate-600 font-semibold text-sm text-center">Toque para selecionar o PDF</span>
+                        <p class="text-[10px] text-slate-400">Suporta apenas arquivos PDF</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase tracking-widest">Slides p/ PÃ¡g</label>
+                            <select id="slidesCount" class="w-full p-2.5 text-sm border border-slate-200 rounded-lg outline-none bg-white">
+                                <option value="3" selected>3 Slides</option>
+                                <option value="2">2 Slides</option>
+                                <option value="1">1 Slide</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase tracking-widest">PosiÃ§Ã£o</label>
+                            <select id="side" class="w-full p-2.5 text-sm border border-slate-200 rounded-lg outline-none bg-white">
+                                <option value="left" selected>Slide Ã  Esquerda</option>
+                                <option value="right">Slide Ã  Direita</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase tracking-widest">TÃ­tulo do Caderno</label>
+                        <input type="text" id="headerDisciplina" placeholder="Ex: Engenharia Civil" class="w-full p-2.5 text-sm border border-slate-200 rounded-lg outline-none">
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-100">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="eyeComfort" checked class="w-4 h-4 rounded text-amber-600">
+                            <label for="eyeComfort" class="text-[10px] font-bold text-amber-900 uppercase">Filtro Marfim</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="processBtn" disabled class="w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all bg-slate-200 text-slate-400 cursor-not-allowed">
+                <span id="btnIcon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </span>
+                <span id="btnText">Gerar PDF para Notas</span>
+            </button>
+        </div>
+
+        <div class="bg-stone-100 p-8 flex justify-center border-t border-slate-100">
+            <div id="visualPreview" class="w-56 h-72 bg-white shadow-2xl rounded-sm border border-slate-300 relative overflow-hidden flex transition-all">
+                <div id="prevSlideContainer" class="w-[40%] flex flex-col gap-4 p-3 pt-10 border-r border-slate-100 bg-slate-50/50">
+                    <div class="h-8 w-full bg-indigo-100 rounded opacity-50"></div>
+                    <div class="h-8 w-full bg-indigo-100 rounded opacity-50"></div>
+                </div>
+                <div id="prevGridContainer" class="flex-1 p-3 pt-10 space-y-4">
+                    <div class="space-y-2">
+                        <div class="h-[1px] w-full bg-slate-300"></div>
+                        <div class="h-[1px] w-full bg-slate-100"></div>
+                        <div class="h-[1px] w-full bg-slate-300"></div>
+                    </div>
+                </div>
+                <div id="eyeComfortOverlay" class="absolute inset-0 pointer-events-none opacity-0 transition-opacity bg-amber-100/20"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { PDFDocument, rgb } = PDFLib;
+        let selectedFile = null;
+        const ui = {
+            slidesCount: document.getElementById('slidesCount'),
+            side: document.getElementById('side'),
+            eyeComfort: document.getElementById('eyeComfort'),
+            fileInput: document.getElementById('fileInput'),
+            processBtn: document.getElementById('processBtn'),
+            prevSlideContainer: document.getElementById('prevSlideContainer'),
+            prevGridContainer: document.getElementById('prevGridContainer'),
+            eyeComfortOverlay: document.getElementById('eyeComfortOverlay'),
+            dropzone: document.getElementById('dropzone'),
+            fileNameDisplay: document.getElementById('fileNameDisplay')
+        };
+
+        function updatePreview() {
+            const isLeft = ui.side.value === 'left';
+            ui.eyeComfortOverlay.style.opacity = ui.eyeComfort.checked ? "1" : "0";
+            ui.prevSlideContainer.style.order = isLeft ? '1' : '2';
+            ui.prevGridContainer.style.order = isLeft ? '2' : '1';
+        }
+
+        [ui.slidesCount, ui.side, ui.eyeComfort].forEach(el => el.onchange = updatePreview);
+        ui.dropzone.onclick = () => ui.fileInput.click();
+
+        ui.fileInput.onchange = (e) => {
+            if (e.target.files[0]) {
+                const file = e.target.files[0];
+                if (file.type !== 'application/pdf') { alert("Selecione um PDF."); return; }
+                selectedFile = file;
+                ui.fileNameDisplay.textContent = file.name;
+                ui.processBtn.disabled = false;
+                ui.processBtn.className = "w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 bg-indigo-700 text-white shadow-xl shadow-indigo-100";
+            }
+        };
+
+        ui.processBtn.onclick = async () => {
+            if (!selectedFile) return;
+            ui.processBtn.disabled = true;
+            document.getElementById('btnText').textContent = "Gerando Caderno...";
+            document.getElementById('btnIcon').innerHTML = '<span class="custom-loader"></span>';
+
+            try {
+                const arrayBuffer = await selectedFile.arrayBuffer();
+                const srcDoc = await PDFDocument.load(arrayBuffer);
+                const outDoc = await PDFDocument.create();
+                const pages = srcDoc.getPages();
+                const totalSlides = pages.length;
+                const slidesPerPage = parseInt(ui.slidesCount.value);
+                const totalPagesNeeded = Math.ceil(totalSlides / slidesPerPage);
+
+                for (let p = 0; p < totalPagesNeeded; p++) {
+                    const page = outDoc.addPage([595.28, 841.89]);
+                    const { width: a4W, height: a4H } = page.getSize();
+                    if (ui.eyeComfort.checked) page.drawRectangle({ x: 0, y: 0, width: a4W, height: a4H, color: rgb(1, 0.98, 0.94) });
+
+                    const margin = 35;
+                    const headerY = a4H - margin - 10;
+                    const hDisc = document.getElementById('headerDisciplina').value;
+                    if(hDisc) {
+                        page.drawText(hDisc.toUpperCase(), { x: margin, y: headerY, size: 9, color: rgb(0.1, 0.1, 0.1) });
+                        page.drawLine({ start: { x: margin, y: headerY - 10 }, end: { x: a4W - margin, y: headerY - 10 }, thickness: 0.8, color: rgb(0.2, 0.2, 0.2) });
+                    }
+
+                    const workingAreaY = headerY - 30;
+                    const slotH = (workingAreaY - margin) / slidesPerPage;
+                    const isLeft = ui.side.value === 'left';
+                    const slideColW = a4W * 0.42;
+
+                    for (let s = 0; s < slidesPerPage; s++) {
+                        const idx = (p * slidesPerPage) + s;
+                        if (idx >= totalSlides) break;
+                        const embedded = await outDoc.embedPage(pages[idx]);
+                        const { width: sW, height: sH } = pages[idx].getSize();
+                        const scale = Math.min(slideColW / sW, (slotH * 0.82) / sH);
+                        const finalW = sW * scale;
+                        const finalH = sH * scale;
+                        const slotCenterY = (workingAreaY - (s * slotH)) - (slotH / 2);
+                        const slideX = isLeft ? margin : a4W - margin - finalW;
+                        const slideY = slotCenterY - (finalH / 2);
+
+                        page.drawRectangle({ x: slideX, y: slideY, width: finalW, height: finalH, borderColor: rgb(0.85, 0.85, 0.85), borderWidth: 0.5 });
+                        page.drawPage(embedded, { x: slideX, y: slideY, width: finalW, height: finalH });
+                        page.drawText(`Slide ${(idx + 1).toString().padStart(2, '0')}/${totalSlides.toString().padStart(2, '0')}`, { x: slideX, y: slideY - 12, size: 7, color: rgb(0.4, 0.4, 0.4) });
+
+                        const gridX = isLeft ? margin + slideColW + 18 : margin;
+                        const gridXEnd = isLeft ? a4W - margin : margin + (a4W - (margin * 2) - slideColW - 18);
+                        const numMajorLines = 9;
+                        const spacing = 15;
+                        const totalGridHeight = (numMajorLines - 1) * spacing;
+                        const gridBlockStartY = slotCenterY + (totalGridHeight / 2);
+
+                        for(let i = 0; i < numMajorLines; i++) {
+                            const y = gridBlockStartY - (i * spacing);
+                            page.drawLine({ start: { x: gridX, y: y }, end: { x: gridXEnd, y: y }, thickness: 0.6, color: rgb(0.5, 0.5, 0.5) });
+                            if (i < numMajorLines - 1) {
+                                const ySub = y - (spacing / 2);
+                                page.drawLine({ start: { x: gridX, y: ySub }, end: { x: gridXEnd, y: ySub }, thickness: 0.2, color: rgb(0.85, 0.85, 0.85), dashArray: [2, 3] });
+                            }
+                        }
+                    }
+                }
+                const pdfBytes = await outDoc.save();
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = `NOTAS_STUDIO.pdf`; a.click();
+            } catch (e) { alert("Erro ao processar."); } finally {
+                ui.processBtn.disabled = false;
+                document.getElementById('btnText').textContent = "Gerar PDF para Notas";
+                document.getElementById('btnIcon').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>`;
+            }
+        };
+        updatePreview();
+    </script>
+</body>
+</html>
