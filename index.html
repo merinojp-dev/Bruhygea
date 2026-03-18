@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Note Studio v0.9</title>
+    <title>PDF Note Studio v1.1 - Noteful Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <style>
@@ -23,103 +23,106 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .drag-over { border-color: #4f46e5; background-color: #f5f3ff; }
     </style>
 </head>
-<body class="bg-stone-50 min-h-screen p-4 md:p-8 text-slate-800">
+<body class="bg-stone-100 min-h-screen p-4 md:p-8 text-slate-800">
 
-    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-200">
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden border border-stone-200">
+        <!-- Cabeçalho Principal -->
         <div class="bg-indigo-900 p-6 text-white flex justify-between items-center border-b-4 border-indigo-700">
             <div>
                 <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
-                    PDF Note Studio v0.9
+                    Note Studio v1.1
                 </h1>
-                <p class="opacity-80 mt-1 text-xs">Otimizado para estudos de Engenharia e Tecnologia.</p>
+                <p class="opacity-80 mt-1 text-xs uppercase tracking-tighter">Otimizado para Noteful e Estudo Ativo.</p>
             </div>
-            <div class="text-right hidden sm:block">
-                <span class="bg-indigo-700/50 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-indigo-500/30">Layout Portrait v0.9</span>
+            <div class="hidden sm:block">
+                <span class="bg-indigo-700/50 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-indigo-500/30">Layout v1.1</span>
             </div>
         </div>
 
         <div class="p-6 space-y-6">
-            <div class="grid md:grid-cols-2 gap-6">
-                <div id="dropzone" class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-all group relative">
-                    <input type="file" id="fileInput" class="hidden" accept=".pdf" />
-                    <div class="flex flex-col items-center justify-center gap-3">
-                        <div class="bg-indigo-50 p-3 rounded-full group-hover:bg-indigo-100 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                            </svg>
-                        </div>
-                        <span id="fileNameDisplay" class="text-slate-600 font-semibold text-sm text-center">Toque para selecionar o PDF</span>
-                        <p class="text-[10px] text-slate-400">Suporta apenas arquivos PDF</p>
+            <!-- Configurações -->
+            <div class="grid md:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase tracking-widest">1. Carregar PDF</label>
+                        <input type="file" id="fileInput" class="hidden" accept=".pdf" />
+                        <button onclick="document.getElementById('fileInput').click()" class="w-full py-3 px-4 border-2 border-dashed border-indigo-200 rounded-lg text-sm text-indigo-600 font-semibold hover:bg-indigo-50 transition-all truncate">
+                            <span id="fileNameDisplay">Clique aqui para subir os slides</span>
+                        </button>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase tracking-widest">2. Título do PDF</label>
+                        <input type="text" id="headerDisciplina" placeholder="Ex: IMUNOLOGIA CONTRA VIRUS 2026.1" class="w-full p-2.5 text-sm border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                 </div>
 
                 <div class="space-y-4">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase tracking-widest">Slides p/ PÃ¡g</label>
-                            <select id="slidesCount" class="w-full p-2.5 text-sm border border-slate-200 rounded-lg outline-none bg-white">
+                            <label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase tracking-widest">Slides/Pág</label>
+                            <select id="slidesCount" class="w-full p-2.5 text-sm border border-slate-300 rounded-lg outline-none bg-white">
                                 <option value="3" selected>3 Slides</option>
                                 <option value="2">2 Slides</option>
-                                <option value="1">1 Slide</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase tracking-widest">PosiÃ§Ã£o</label>
-                            <select id="side" class="w-full p-2.5 text-sm border border-slate-200 rounded-lg outline-none bg-white">
-                                <option value="left" selected>Slide Ã  Esquerda</option>
-                                <option value="right">Slide Ã  Direita</option>
+                            <label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase tracking-widest">Lado</label>
+                            <select id="side" class="w-full p-2.5 text-sm border border-slate-300 rounded-lg outline-none bg-white">
+                                <option value="left" selected>Esquerda</option>
+                                <option value="right">Direita</option>
                             </select>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase tracking-widest">TÃ­tulo do Caderno</label>
-                        <input type="text" id="headerDisciplina" placeholder="Ex: Engenharia Civil" class="w-full p-2.5 text-sm border border-slate-200 rounded-lg outline-none">
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-100">
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" id="eyeComfort" checked class="w-4 h-4 rounded text-amber-600">
-                            <label for="eyeComfort" class="text-[10px] font-bold text-amber-900 uppercase">Filtro Marfim</label>
-                        </div>
+                    <div class="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-200">
+                        <input type="checkbox" id="eyeComfort" checked class="w-5 h-5 rounded text-amber-600 focus:ring-amber-500 border-slate-300">
+                        <label for="eyeComfort" class="text-[10px] font-bold text-slate-600 uppercase">Papel Marfim</label>
                     </div>
                 </div>
             </div>
 
-            <button id="processBtn" disabled class="w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all bg-slate-200 text-slate-400 cursor-not-allowed">
+            <!-- Botão Processar -->
+            <button id="processBtn" disabled class="w-full py-5 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all bg-slate-300 text-slate-500 cursor-not-allowed">
                 <span id="btnIcon">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
                 </span>
-                <span id="btnText">Gerar PDF para Notas</span>
+                <span id="btnText">Gerar Caderno Otimizado</span>
             </button>
         </div>
 
-        <div class="bg-stone-100 p-8 flex justify-center border-t border-slate-100">
-            <div id="visualPreview" class="w-56 h-72 bg-white shadow-2xl rounded-sm border border-slate-300 relative overflow-hidden flex transition-all">
-                <div id="prevSlideContainer" class="w-[40%] flex flex-col gap-4 p-3 pt-10 border-r border-slate-100 bg-slate-50/50">
-                    <div class="h-8 w-full bg-indigo-100 rounded opacity-50"></div>
-                    <div class="h-8 w-full bg-indigo-100 rounded opacity-50"></div>
-                </div>
-                <div id="prevGridContainer" class="flex-1 p-3 pt-10 space-y-4">
-                    <div class="space-y-2">
-                        <div class="h-[1px] w-full bg-slate-300"></div>
-                        <div class="h-[1px] w-full bg-slate-100"></div>
-                        <div class="h-[1px] w-full bg-slate-300"></div>
+        <!-- Preview Visual (Simulação) -->
+        <div class="bg-stone-200 p-8 flex justify-center border-t border-slate-200">
+            <div class="w-64 h-80 bg-white shadow-2xl rounded-sm border border-slate-400 p-4 overflow-hidden flex flex-col relative">
+                <div class="h-2 w-3/4 bg-slate-400 rounded-full mb-1"></div>
+                <div class="h-[1px] w-full bg-slate-200 mb-6"></div>
+                
+                <div class="flex gap-2">
+                    <div class="w-[45%] h-14 bg-slate-100 rounded border border-slate-200 relative">
+                         <!-- Mock dos ícones rápidos -->
+                         <div class="absolute -top-3 left-0 flex gap-2">
+                             <div class="w-3 h-3 rounded-full border border-slate-300"></div>
+                             <div class="w-3 h-3 text-slate-300 text-[10px]">★</div>
+                         </div>
+                    </div>
+                    <div class="flex-1 border border-slate-400 rounded h-14 p-1 flex flex-col gap-1">
+                        <div class="h-[1px] w-full bg-slate-200"></div>
+                        <div class="h-[1px] w-full bg-slate-200"></div>
                     </div>
                 </div>
-                <div id="eyeComfortOverlay" class="absolute inset-0 pointer-events-none opacity-0 transition-opacity bg-amber-100/20"></div>
+                <div class="absolute bottom-2 right-2 text-[6px] text-slate-400 font-mono italic">MOCKUP LAYOUT v1.1</div>
             </div>
         </div>
     </div>
 
     <script>
         const { PDFDocument, rgb } = PDFLib;
+
         let selectedFile = null;
         const ui = {
             slidesCount: document.getElementById('slidesCount'),
@@ -127,38 +130,27 @@
             eyeComfort: document.getElementById('eyeComfort'),
             fileInput: document.getElementById('fileInput'),
             processBtn: document.getElementById('processBtn'),
-            prevSlideContainer: document.getElementById('prevSlideContainer'),
-            prevGridContainer: document.getElementById('prevGridContainer'),
-            eyeComfortOverlay: document.getElementById('eyeComfortOverlay'),
-            dropzone: document.getElementById('dropzone'),
-            fileNameDisplay: document.getElementById('fileNameDisplay')
+            fileNameDisplay: document.getElementById('fileNameDisplay'),
+            headerDisciplina: document.getElementById('headerDisciplina')
         };
-
-        function updatePreview() {
-            const isLeft = ui.side.value === 'left';
-            ui.eyeComfortOverlay.style.opacity = ui.eyeComfort.checked ? "1" : "0";
-            ui.prevSlideContainer.style.order = isLeft ? '1' : '2';
-            ui.prevGridContainer.style.order = isLeft ? '2' : '1';
-        }
-
-        [ui.slidesCount, ui.side, ui.eyeComfort].forEach(el => el.onchange = updatePreview);
-        ui.dropzone.onclick = () => ui.fileInput.click();
 
         ui.fileInput.onchange = (e) => {
             if (e.target.files[0]) {
-                const file = e.target.files[0];
-                if (file.type !== 'application/pdf') { alert("Selecione um PDF."); return; }
-                selectedFile = file;
-                ui.fileNameDisplay.textContent = file.name;
+                selectedFile = e.target.files[0];
+                ui.fileNameDisplay.textContent = selectedFile.name;
                 ui.processBtn.disabled = false;
-                ui.processBtn.className = "w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 bg-indigo-700 text-white shadow-xl shadow-indigo-100";
+                ui.processBtn.className = "w-full py-5 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all bg-indigo-700 text-white hover:bg-indigo-800 shadow-xl";
+                
+                if(!ui.headerDisciplina.value) {
+                    ui.headerDisciplina.value = selectedFile.name.replace(/\.[^/.]+$/, "").toUpperCase();
+                }
             }
         };
 
         ui.processBtn.onclick = async () => {
             if (!selectedFile) return;
             ui.processBtn.disabled = true;
-            document.getElementById('btnText').textContent = "Gerando Caderno...";
+            document.getElementById('btnText').textContent = "A desenhar molduras e marcadores...";
             document.getElementById('btnIcon').innerHTML = '<span class="custom-loader"></span>';
 
             try {
@@ -167,71 +159,142 @@
                 const outDoc = await PDFDocument.create();
                 const pages = srcDoc.getPages();
                 const totalSlides = pages.length;
+                
                 const slidesPerPage = parseInt(ui.slidesCount.value);
                 const totalPagesNeeded = Math.ceil(totalSlides / slidesPerPage);
 
                 for (let p = 0; p < totalPagesNeeded; p++) {
                     const page = outDoc.addPage([595.28, 841.89]);
                     const { width: a4W, height: a4H } = page.getSize();
-                    if (ui.eyeComfort.checked) page.drawRectangle({ x: 0, y: 0, width: a4W, height: a4H, color: rgb(1, 0.98, 0.94) });
-
-                    const margin = 35;
-                    const headerY = a4H - margin - 10;
-                    const hDisc = document.getElementById('headerDisciplina').value;
-                    if(hDisc) {
-                        page.drawText(hDisc.toUpperCase(), { x: margin, y: headerY, size: 9, color: rgb(0.1, 0.1, 0.1) });
-                        page.drawLine({ start: { x: margin, y: headerY - 10 }, end: { x: a4W - margin, y: headerY - 10 }, thickness: 0.8, color: rgb(0.2, 0.2, 0.2) });
+                    
+                    if (ui.eyeComfort.checked) {
+                        page.drawRectangle({ x: 0, y: 0, width: a4W, height: a4H, color: rgb(1, 0.98, 0.94) });
                     }
 
-                    const workingAreaY = headerY - 30;
-                    const slotH = (workingAreaY - margin) / slidesPerPage;
+                    const margin = 40;
+                    const headerY = a4H - margin;
+                    const disciplineTitle = ui.headerDisciplina.value || "NOTAS DE ESTUDO";
+
+                    // Título e Linha Horizontal Longa
+                    page.drawText(disciplineTitle, { x: margin, y: headerY, size: 10, color: rgb(0.1, 0.1, 0.1) });
+                    page.drawLine({
+                        start: { x: margin, y: headerY - 10 },
+                        end: { x: a4W - margin, y: headerY - 10 },
+                        thickness: 1, color: rgb(0.2, 0.2, 0.2)
+                    });
+
+                    const workingAreaY = headerY - 45;
                     const isLeft = ui.side.value === 'left';
-                    const slideColW = a4W * 0.42;
+                    const slideColW = a4W * 0.40;
+                    const notesColW = a4W - (margin * 2) - slideColW - 15;
+                    
+                    // Espaçamento mais compacto (slidesPerPage + 0.1)
+                    const slotH = (workingAreaY - margin) / (slidesPerPage + 0.1); 
 
                     for (let s = 0; s < slidesPerPage; s++) {
                         const idx = (p * slidesPerPage) + s;
                         if (idx >= totalSlides) break;
-                        const embedded = await outDoc.embedPage(pages[idx]);
-                        const { width: sW, height: sH } = pages[idx].getSize();
+
+                        const slidePage = pages[idx];
+                        const embedded = await outDoc.embedPage(slidePage);
+                        const { width: sW, height: sH } = slidePage.getSize();
+
                         const scale = Math.min(slideColW / sW, (slotH * 0.82) / sH);
                         const finalW = sW * scale;
                         const finalH = sH * scale;
-                        const slotCenterY = (workingAreaY - (s * slotH)) - (slotH / 2);
+
+                        const slotStartY = workingAreaY - (s * slotH);
+                        const slotCenterY = slotStartY - (slotH / 2);
+                        
                         const slideX = isLeft ? margin : a4W - margin - finalW;
                         const slideY = slotCenterY - (finalH / 2);
 
-                        page.drawRectangle({ x: slideX, y: slideY, width: finalW, height: finalH, borderColor: rgb(0.85, 0.85, 0.85), borderWidth: 0.5 });
+                        // Desenha Slide
+                        page.drawRectangle({
+                            x: slideX, y: slideY, width: finalW, height: finalH,
+                            borderColor: rgb(0.85, 0.85, 0.85), borderWidth: 0.5
+                        });
                         page.drawPage(embedded, { x: slideX, y: slideY, width: finalW, height: finalH });
-                        page.drawText(`Slide ${(idx + 1).toString().padStart(2, '0')}/${totalSlides.toString().padStart(2, '0')}`, { x: slideX, y: slideY - 12, size: 7, color: rgb(0.4, 0.4, 0.4) });
 
-                        const gridX = isLeft ? margin + slideColW + 18 : margin;
-                        const gridXEnd = isLeft ? a4W - margin : margin + (a4W - (margin * 2) - slideColW - 18);
-                        const numMajorLines = 9;
-                        const spacing = 15;
-                        const totalGridHeight = (numMajorLines - 1) * spacing;
-                        const gridBlockStartY = slotCenterY + (totalGridHeight / 2);
+                        // Marcador de Slide (Slide 01/XX)
+                        const labelText = `Slide ${(idx + 1).toString().padStart(2, '0')}/${totalSlides.toString().padStart(2, '0')}`;
+                        page.drawText(labelText, {
+                            x: slideX, y: slideY - 12,
+                            size: 7, color: rgb(0.4, 0.4, 0.4)
+                        });
 
-                        for(let i = 0; i < numMajorLines; i++) {
-                            const y = gridBlockStartY - (i * spacing);
-                            page.drawLine({ start: { x: gridX, y: y }, end: { x: gridXEnd, y: y }, thickness: 0.6, color: rgb(0.5, 0.5, 0.5) });
-                            if (i < numMajorLines - 1) {
-                                const ySub = y - (spacing / 2);
-                                page.drawLine({ start: { x: gridX, y: ySub }, end: { x: gridXEnd, y: ySub }, thickness: 0.2, color: rgb(0.85, 0.85, 0.85), dashArray: [2, 3] });
-                            }
+                        // --- MARCADORES PARA PINTAR (CÍRCULO E ESTRELA) ---
+                        // Posição: Acima do slide para não tapar conteúdo
+                        const markerY = slideY + finalH + 6;
+                        
+                        // 1. Círculo (Marcação de Tempo/Progresso)
+                        page.drawCircle({
+                            x: slideX + 5, y: markerY + 4, size: 5,
+                            borderColor: rgb(0.6, 0.6, 0.6), borderWidth: 0.8
+                        });
+
+                        // 2. Estrela (Importante / Pergunta)
+                        page.drawText('★', {
+                            x: slideX + 18, y: markerY,
+                            size: 10, color: rgb(0.6, 0.6, 0.6)
+                        });
+
+                        // --- ÁREA DE NOTAS COM MOLDURA ---
+                        const gridX = isLeft ? margin + slideColW + 15 : margin;
+                        const gridY = slideY;
+                        const gridW = notesColW;
+                        const gridH = finalH;
+
+                        // Moldura das notas (Retângulo sólido conforme desenho)
+                        page.drawRectangle({
+                            x: gridX, y: gridY, width: gridW, height: gridH,
+                            borderColor: rgb(0.4, 0.4, 0.4), borderWidth: 1
+                        });
+
+                        // Ícone do Professor (Monitor no topo da moldura)
+                        page.drawRectangle({
+                            x: gridX + 5, y: gridY + gridH + 1, width: 8, height: 6,
+                            borderColor: rgb(0.5, 0.5, 0.5), borderWidth: 0.5
+                        });
+                        page.drawLine({
+                            start: { x: gridX + 7, y: gridY + gridH + 1 },
+                            end: { x: gridX + 7, y: gridY + gridH - 1.5 },
+                            thickness: 0.5, color: rgb(0.5, 0.5, 0.5)
+                        });
+
+                        // Linhas de escrita (mais densas conforme pedido anterior)
+                        const lineSpacing = 14; 
+                        let lineY = gridY + gridH - lineSpacing;
+                        while (lineY > gridY + 4) {
+                            page.drawLine({
+                                start: { x: gridX + 5, y: lineY },
+                                end: { x: gridX + gridW - 5, y: lineY },
+                                thickness: 0.3, color: rgb(0.8, 0.8, 0.8),
+                                dashArray: [1, 2]
+                            });
+                            lineY -= lineSpacing;
                         }
                     }
                 }
+
                 const pdfBytes = await outDoc.save();
                 const blob = new Blob([pdfBytes], { type: 'application/pdf' });
                 const url = URL.createObjectURL(blob);
-                const a = document.createElement('a'); a.href = url; a.download = `NOTAS_STUDIO.pdf`; a.click();
-            } catch (e) { alert("Erro ao processar."); } finally {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `NOTAS_${ui.headerDisciplina.value.substring(0,20)}.pdf`;
+                a.click();
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao processar o PDF.");
+            } finally {
                 ui.processBtn.disabled = false;
-                document.getElementById('btnText').textContent = "Gerar PDF para Notas";
-                document.getElementById('btnIcon').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>`;
+                document.getElementById('btnText').textContent = "Gerar Caderno Otimizado";
+                document.getElementById('btnIcon').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>`;
             }
         };
-        updatePreview();
     </script>
 </body>
 </html>
+
+
